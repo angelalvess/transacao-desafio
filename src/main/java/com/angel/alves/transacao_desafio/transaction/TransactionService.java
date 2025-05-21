@@ -53,8 +53,8 @@ public class TransactionService {
         walletRepository.findById(transaction.payee()).map(
                 payee -> walletRepository.findById(transaction.payer()).
                         map( payer -> isTransactionValid(transaction, payer) ? transaction : null
-                ).orElseThrow(() -> new RuntimeException("Dont pass"))
-        ).orElseThrow(() -> new RuntimeException("Payee not found"));
+                ).orElseThrow(() -> new IllegalTransactionException("dont pass validation"))
+        ).orElseThrow(() -> new IllegalTransactionException("Payer not found"));
     }
     
     public boolean isTransactionValid(Transaction transaction, Wallet payer){
