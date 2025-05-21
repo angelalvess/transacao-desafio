@@ -1,5 +1,6 @@
 package com.angel.alves.transacao_desafio.transaction;
 
+import com.angel.alves.transacao_desafio.authorization.AuthorizationService;
 import com.angel.alves.transacao_desafio.wallet.Wallet;
 import com.angel.alves.transacao_desafio.wallet.WalletRepository;
 import com.angel.alves.transacao_desafio.wallet.WalletService;
@@ -13,11 +14,13 @@ public class TransactionService {
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
     private final WalletService walletService;
+    private final AuthorizationService authorizationService;
 
-    public TransactionService(WalletRepository walletRepository, TransactionRepository transactionRepository, WalletService walletService) {
+    public TransactionService(WalletRepository walletRepository, TransactionRepository transactionRepository, WalletService walletService, AuthorizationService authorizationService) {
         this.walletRepository = walletRepository;
         this.transactionRepository = transactionRepository;
         this.walletService = walletService;
+        this.authorizationService = authorizationService;
     }
 
 
@@ -37,7 +40,7 @@ public class TransactionService {
         walletService.save(walletPayee.credit(transaction.value()));
 
         // 4  autorizar
-        // authorizationService.authorize(transaction);
+         authorizationService.authorized(transaction);
 
         // 5 notificar
         // notificationService.authorize(newTransaction);
