@@ -2,6 +2,7 @@ package com.angel.alves.transacao_desafio.transaction;
 
 import com.angel.alves.transacao_desafio.wallet.Wallet;
 import com.angel.alves.transacao_desafio.wallet.WalletRepository;
+import com.angel.alves.transacao_desafio.wallet.WalletService;
 import com.angel.alves.transacao_desafio.wallet.WalletType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,12 +12,14 @@ public class TransactionService {
 
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
+    private final WalletService walletService;
 
-
-    public TransactionService(WalletRepository walletRepository, TransactionRepository transactionRepository) {
+    public TransactionService(WalletRepository walletRepository, TransactionRepository transactionRepository, WalletService walletService) {
         this.walletRepository = walletRepository;
         this.transactionRepository = transactionRepository;
+        this.walletService = walletService;
     }
+
 
     @Transactional
     public Transaction createTransaction(Transaction transaction){
@@ -26,17 +29,20 @@ public class TransactionService {
 
         // 3 debitar e creditar e salvar
         // pagador
-        var walletPayer = walletRepository.findById(transaction.payer());
+        var walletPayer = walletRepository.findById(transaction.payer()).get();
+        walletService.save(walletPayer.debit(transaction.value()));
 
         // recebedor
-        var walletPayee = walletRepository.findById(transaction.payee());
-
+        var walletPayee = walletRepository.findById(transaction.payee()).get();
+        walletService.save(walletPayee.credit(transaction.value()));
 
         // 4  autorizar
+        // authorizationService.authorize(transaction);
 
         // 5 notificar
+        // notificationService.authorize(newTransaction);
 
-        return transaction;
+        return newTransaction;
     }
 
 
